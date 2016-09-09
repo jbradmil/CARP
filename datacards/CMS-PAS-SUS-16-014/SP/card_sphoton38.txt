@@ -1,0 +1,18 @@
+#the tag = NJets3_BTags0_MHT3_HT8 
+imax 1 #number of channels 
+jmax 1 #number of backgrounds 
+kmax * nuissance 
+shapes * * FAKE 
+------------ 
+bin Binsphoton38
+observation 0.0
+bin Binsphoton38 Binsphoton38 
+process sig zvv 
+process 0 1 
+rate 0.00000 4.29685 
+------------ 
+SPhoCR38 lnU - 100 
+ZgammaRatioErr lnN  - 0.999999992549/1.00000000373 
+ZScaleErr lnN - 1.06319719553 
+PhoRZgDblRatio38 lnN  - 0.564626902342/1.45865380764 
+PhoPurUnc lnN - 1.01709744334 

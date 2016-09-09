@@ -1,0 +1,72 @@
+#the tag = NJets3_BTags3_MHT0_HT1 
+imax 1 #number of channels 
+jmax 6 #number of backgrounds 
+kmax * nuissance 
+shapes * * FAKE 
+------------ 
+bin Binsignal151
+observation 3.0
+bin Binsignal151 Binsignal151 Binsignal151 Binsignal151 Binsignal151 Binsignal151 Binsignal151 
+process sig WTopSL WTopSLHighW WTopHad WTopHadHighW zvv qcd 
+process 0 1 2 3 4 5 6 
+rate 0.01721 0.0001 0.20847 0.28614 0.25000 0.11014 0.23250 
+------------ 
+IsoTrackSigEff lnN 1.02 - - - - - - 
+lumi lnN 1.027 - - - - - - 
+JetIDUnc lnN 1.01 - - - - - - 
+METResolutionSys lnU 1.00041677646 - - - - - - 
+TrigSystunc lnN 0.979695453646/1.02030464794  -  -  -  -  -  - 
+TrigStatUnc lnN 0.99086295922/1.00609139438  -  -  -  -  -  - 
+JERUnc lnN 0.959342855567/1.23391996736  -  -  -  -  -  - 
+JECUnc lnN 1.11961954005/1.77768508321  -  -  -  -  -  - 
+PileupUnc lnN 0.97848664289/1.01882063185  -  -  -  -  -  - 
+ISRSystem lnN 0.993801124167/1.00525531467  -  -  -  -  -  - 
+ScaleUnc lnN 1.00258808831/0.998240169028  -  -  -  -  -  - 
+MisTagSFunc lnN 0.996171913025/1.00381548991  -  -  -  -  -  - 
+BTagSFUnc lnN 0.974365064506/1.02546436711  -  -  -  -  -  - 
+btagCFunc lnN 0.991727788699/1.00825778562  -  -  -  -  -  - 
+mistagCFUnc lnN 0.99903612098/1.00096245677  -  -  -  -  -  - 
+SignalMCStatErr151 lnN 1.61095871226 - - - - - - 
+DYsysKin151 lnN - - - - - 1.20000000298 - 
+DYstat_Njet1_BTag3 lnN - - - - - 2.00183653831 - 
+DYMCstat_Nj3_Btag3 lnN - - - - - 1.43622463942 - 
+DYPur_BTag2Plus lnN - - - - - 1.07668808848 - 
+SPhoCR31 lnU - - - - - 100 - 
+DYsysNj lnN  -  -  -  -  - 0.62614145875/1.97367024422  - 
+LLStatEleIso lnN  - 1.0/1.0  -  -  -  -  - 
+LLStatEleReco lnN  - 1.0/1.0  -  -  -  -  - 
+LLStatMuReco lnN  - 1.0/1.0  -  -  -  -  - 
+LLSysMuIso lnN  - 1.0/1.0 - 0.990095557645/1.01010460407 -  -  - 
+LLSysMuReco lnN  - 1.0/1.0 - 0.974400558077/1.0264602798 -  -  - 
+LLStatMuIso lnN  - 1.0/1.0 - 0.992906689178/1.00729773566 -  -  - 
+LLSysEleIso lnN  - 1.0/1.0  -  -  -  -  - 
+LLSysEleReco lnN  - 1.0/1.0  -  -  -  -  - 
+LLSysMTW_NJet3 lnN  - 1.0/1.0 - 0.990099009901/1.0101010101 -  -  - 
+LLStatMTW_NJet3 lnN  - 1.0/1.0 - 0.993876997132/1.00616072501 -  -  - 
+LLSysDiLepPurity_NJet3 lnN  - 1.0/1.0  -  -  -  -  - 
+LLStatDiLepPurity_NJet3 lnN  - 1.0/1.0  -  -  -  -  - 
+LLSysSingleLepPurity_NJet3 lnN  - 1.0/1.0  -  -  -  -  - 
+LLStatSingleLepPurity_NJet3 lnN  - 1.0/1.0  -  -  -  -  - 
+ElecAccSys_NJets3_MHT0_HT1 lnN  - 1.0/1.0  -  -  -  -  - 
+ElecAccStat_NJets3_MHT0_HT1 lnN  - 1.0/1.0  -  -  -  -  - 
+MuAccSysNJets3_MHT0_HT1 lnN  - 1.0/1.0 - 0.990790069103/1.00979959965 -  -  - 
+MuAccStatNJets3_MHT0_HT1 lnN  - 1.0/1.0 - 0.983145058521/1.01714390093 -  -  - 
+LLSysIsoTrack7JetsMHT0_HT1 lnN  - 1.0/1.0 -  -  -  -  - 
+LLStatIsoTrack7JetsMHT0_HT1 lnN  - 1.0/1.0  -  -  -  -  - 
+LLPuritySys_MHT0_NJets3 lnN  - 1.0/1.0  -  -  -  -  - 
+LLPurityStat_MHT0_NJets3 lnN  - 1.0/1.0  -  -  -  -  - 
+MuQSquareAccSysNJets3MHT0_HT1 lnN  -  -  -  -  -  -  - 
+ElecQSquareAccSysNJets3MHT0_HT1 lnN  -  -  -  -  -  -  - 
+LLSCSRNJets3_BTags3_MHT0_HT1 lnU - - 100 - 100 - - 
+LLHadTauCorrelErrorNJets3_BTags3_MHT0_HT1 lnN - - - 1.41203129625 - - - 
+HadTauClosureNJets3_BTags3_MHT0_HT1 lnN - - - 1.28473076339 - - - 
+HadTauClosureCorrNJets3_BTags3 lnN - - - 1.008874 - - - 
+HadTauMuStatNJets3_BTags3_MHT0_HT1 lnN - - - 1.01844207918 - - - 
+HadTauTrigSys lnN - - - 1.02 - - - 
+HadTauMuDiLepton lnN - - - 1.02 - - - 
+HadTauBTagShape lnN  -  -  - 0.934425771236/1.06649302691  -  -  - 
+HadTauEnergyScale lnN  -  -  - 0.988904394209/1.00997804385  -  -  - 
+QCDControlCNJets3_BTags3_MHT0_HT1 lnU - - - - - - 100 
+KQCDHT2 lnN - - - - - - 1.357 
+KQCDNJ4 lnN - - - - - - 1.665 
+KQCDHT2MHT1 lnN - - - - - - 1.58 

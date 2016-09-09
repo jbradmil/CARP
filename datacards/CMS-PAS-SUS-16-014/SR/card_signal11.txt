@@ -1,0 +1,59 @@
+#the tag = NJets0_BTags1_MHT0_HT1 
+imax 1 #number of channels 
+jmax 6 #number of backgrounds 
+kmax * nuissance 
+shapes * * FAKE 
+------------ 
+bin Binsignal11
+observation 411.0
+bin Binsignal11 Binsignal11 Binsignal11 Binsignal11 Binsignal11 Binsignal11 Binsignal11 
+process sig WTopSL WTopSLHighW WTopHad WTopHadHighW zvv qcd 
+process 0 1 2 3 4 5 6 
+rate 0.0001 125.05693 0.47592 104.63046 0.25000 153.27628 29.16000 
+------------ 
+IsoTrackSigEff lnN 1.02 - - - - - - 
+lumi lnN 1.027 - - - - - - 
+JetIDUnc lnN 1.01 - - - - - - 
+DYsysKin11 lnN - - - - - 1.0700000003 - 
+DYstat_Njet0_BTag1 lnN - - - - - 1.05744682997 - 
+DYPur_BTag1 lnN - - - - - 1.03843192384 - 
+SPhoCR1 lnU - - - - - 100 - 
+DYsysNj lnN  -  -  -  -  - 1.0/1.0  - 
+LLSysNonClosSysNJets0_BTags1_MHT0_HT1 lnN  - 0.944101475801/1.0558985242  -  -  -  -  - 
+LLStatEleIso lnN  - 0.989264664705/1.01152605488  -  -  -  -  - 
+LLStatEleReco lnN  - 0.987200204323/1.0134639956  -  -  -  -  - 
+LLStatMuReco lnN  - 0.995162474601/1.00531600332  -  -  -  -  - 
+LLSysMuIso lnN  - 0.986066694259/1.01664578967 - 0.990097146481/1.01010295004 -  -  - 
+LLSysMuReco lnN  - 0.955391280861/1.0474784573 - 0.974861995004/1.02595411404 -  -  - 
+LLStatMuIso lnN  - 0.993497428079/1.00703281368 - 0.992516741157/1.00773628289 -  -  - 
+LLSysEleIso lnN  - 0.987423662242/1.01543593687  -  -  -  -  - 
+LLSysEleReco lnN  - 0.948936802721/1.05611184602  -  -  -  -  - 
+LLSysMTW_NJet0 lnN  - 0.993519869416/1.00656718333 - 0.990099009901/1.0101010101 -  -  - 
+LLStatMTW_NJet0 lnN  - 0.996951774166/1.00311189342 - 0.996648624914/1.00336264457 -  -  - 
+LLSysDiLepPurity_NJet0 lnN  - 0.996193179363/1.00571024426  -  -  -  -  - 
+LLStatDiLepPurity_NJet0 lnN  - 0.999584332979/1.00043051434  -  -  -  -  - 
+LLSysSingleLepPurity_NJet0 lnN  - 0.997856074673/1.00353575763  -  -  -  -  - 
+LLStatSingleLepPurity_NJet0 lnN  - 0.99981976299/1.00057340132  -  -  -  -  - 
+LLSysIsoTrackNJets0_MHT0_HT1 lnN  - 0.936250621934/1.06374942921 - 0.963677949517/1.03769106733 -  -  - 
+LLStatIsoTrackNJets0_MHT0_HT1 lnN  - 0.996375515967/1.00361710635 - 0.989721302296/1.01038544657 -  -  - 
+ElecAccSys_NJets0_BTags1_MHT0_HT1 lnN  - 0.997932043073/1.00250750436  -  -  -  -  - 
+ElecAccStat_NJets0_BTags1_MHT0_HT1 lnN  - 0.986281328137/1.01422406115  -  -  -  -  - 
+MuAccSysNJets0_BTags1_MHT0_HT1 lnN  - 0.995051964284/1.00766460948 - 0.994798660278/1.00735449791 -  -  - 
+MuAccStatNJets0_BTags1_MHT0_HT1 lnN  - 0.985475949765/1.01496597622 - 0.988850686158/1.01127502261 -  -  - 
+LLPuritySys_MHT0_NJets0 lnN  - 0.997856074673/1.00353575763  -  -  -  -  - 
+LLPurityStat_MHT0_NJets0 lnN  - 0.99981976299/1.00057340132  -  -  -  -  - 
+MuQSquareAccSysNJets0MHT0_HT1 lnN  - 0.990993526601/1.00911053521 - 0.994896650314/1.00564241409 -  -  - 
+ElecQSquareAccSysNJets0MHT0_HT1 lnN  - 0.993023572431/1.00704338911  -  -  -  -  - 
+LLSCSRNJets0_BTags1_MHT0_HT1 lnU - - 100 - 100 - - 
+LLHadTauCorrelErrorNJets0_BTags1_MHT0_HT1 lnN - 1.07433472888 - 1.05302646773 - - - 
+HadTauClosureNJets0_BTags1_MHT0_HT1 lnN - - - 1.10965723406 - - - 
+HadTauClosureCorrNJets0_BTags1 lnN - - - 1.10321 - - - 
+HadTauMuStatNJets0_BTags1_MHT0_HT1 lnN - - - 1.00634673333 - - - 
+HadTauTrigSys lnN - - - 1.02 - - - 
+HadTauMuDiLepton lnN - - - 1.02 - - - 
+HadTauBTagShape lnN  -  -  - 0.944738026708/1.05642867088  -  -  - 
+HadTauEnergyScale lnN  -  -  - 0.977380733937/1.02391389757  -  -  - 
+QCDControlCNJets0_BTags1_MHT0_HT1 lnU - - - - - - 100 
+KQCDHT2 lnN - - - - - - 1.357 
+KQCDHT2MHT1 lnN - - - - - - 1.58 
+KQCDMCCorr lnN - - - - - - 1.039 

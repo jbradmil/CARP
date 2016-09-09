@@ -1,0 +1,15 @@
+#the tag = NJets1_BTags3_MHT1_HT5 
+imax 1 #number of channels 
+jmax 2 #number of backgrounds 
+kmax * nuissance 
+shapes * * FAKE 
+------------ 
+bin BinLowdphi75
+observation 33.0
+bin BinLowdphi75 BinLowdphi75 BinLowdphi75 
+process sig qcd contam 
+process 0 1 2 
+rate 0.0001 23.90000 9.10000 
+------------ 
+QCDControlCNJets1_BTags3_MHT1_HT5 lnU - 100 - 
+contamUnc75 lnN - - 1.23846153846 

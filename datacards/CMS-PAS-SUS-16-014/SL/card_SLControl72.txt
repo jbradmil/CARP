@@ -1,0 +1,14 @@
+#the tag = NJets1_BTags3_MHT0_HT2 
+imax 1 #number of channels 
+jmax 4 #number of backgrounds 
+kmax * nuissance 
+shapes * * FAKE 
+------------ 
+bin BinSLControl72
+observation 0.0
+bin BinSLControl72 BinSLControl72 BinSLControl72 BinSLControl72 BinSLControl72 
+process sig WTopSL WTopSLHighW WTopHad WTopHadHighW 
+process 0 1 2 3 4 
+rate 0.0001 0.0001 0.0001 0.0001 1.00000 
+------------ 
+LLSCSRNJets1_BTags3_MHT0_HT2 lnU - - - - 100 
