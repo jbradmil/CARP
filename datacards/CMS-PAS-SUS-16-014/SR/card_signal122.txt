@@ -9,7 +9,7 @@ observation 4.0
 bin Binsignal122 Binsignal122 Binsignal122 Binsignal122 Binsignal122 Binsignal122 Binsignal122 
 process sig WTopSL WTopSLHighW WTopHad WTopHadHighW zvv qcd 
 process 0 1 2 3 4 5 6 
-rate 0.08602 0.84377 0.21596 1.56894 0.25000 2.35816 3.14000 
+rate SIGNAL 0.84377 0.21596 1.56894 0.25000 2.35816 3.14000 
 ------------ 
 IsoTrackSigEff lnN 1.02 - - - - - - 
 lumi lnN 1.027 - - - - - - 
