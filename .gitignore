@@ -61,3 +61,6 @@ iOSInjectionProject/
 
 # any root files lying around
 *.root
+*~
+vdt
+HiggsAnalysis
