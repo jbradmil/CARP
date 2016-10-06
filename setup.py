@@ -52,12 +52,14 @@ def fixMakefileImp(f, base_dir):
         out = line
         out = out.replace("@ln -sd", "@ln -s")
         out = out.replace("-fipa-pta", "")
+        out = out.replace("LIBS = $(ROOTLIBS)","LIBS = -L$(VDT)/lib $(ROOTLIBS)")
+        out = out.replace("CCFLAGS = -D STANDALONE $(ROOTCFLAGS)","CCFLAGS = -D STANDALONE -I$(VDT)/include $(ROOTCFLAGS)")
         last_line_defined_ccflags = this_line_defines_ccflags
         this_line_defines_ccflags = "CCFLAGS = " in line
         this_line_comment_ccflags = "# CMSSW CXXFLAGS" in line
-        print(out, end="")
         if last_line_defined_ccflags and this_line_comment_ccflags:
             print("CCFLAGS += -Wno-unused-command-line-argument -Wno-unknown-warning-option -I"+base_dir)
+        print(out, end="")
 
 def fixMakefile(base_dir):
     path = os.path.join(base_dir, "HiggsAnalysis/CombinedLimit/Makefile")
