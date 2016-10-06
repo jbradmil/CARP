@@ -44,22 +44,30 @@ def buildVDT(base_dir):
 def findBoost(base_dir):
     return "/usr/local/Cellar/boost/1.61.0_1"
 
+def fixMakefileImp(f, base_dir):
+    last_line_defined_ccflags = False
+    this_line_defines_ccflags = False
+    this_line_comment_ccflags = False
+    for line in f:
+        out = line
+        out = out.replace("@ln -sd", "@ln -s")
+        out = out.replace("-fipa-pta", "")
+        last_line_defined_ccflags = this_line_defines_ccflags
+        this_line_defines_ccflags = "CCFLAGS = " in line
+        this_line_comment_ccflags = "# CMSSW CXXFLAGS" in line
+        print(out, end="")
+        if last_line_defined_ccflags and this_line_comment_ccflags:
+            print("CCFLAGS += -Wno-unused-command-line-argument -Wno-unknown-warning-option -I"+base_dir)
+
 def fixMakefile(base_dir):
     path = os.path.join(base_dir, "HiggsAnalysis/CombinedLimit/Makefile")
-    with fileinput.FileInput(path, inplace=True) as f:
-        last_line_defined_ccflags = False
-        this_line_defines_ccflags = False
-        this_line_comment_ccflags = False
-        for line in f:
-            out = line
-            out = out.replace("@ln -sd", "@ln -s")
-            out = out.replace("-fipa-pta", "")
-            last_line_defined_ccflags = this_line_defines_ccflags
-            this_line_defines_ccflags = "CCFLAGS = " in line
-            this_line_comment_ccflags = "# CMSSW CXXFLAGS" in line
-            print(out, end="")
-            if last_line_defined_ccflags and this_line_comment_ccflags:
-                print("CCFLAGS += -Wno-unused-command-line-argument -Wno-unknown-warning-option -I"+os.path.join(base_dir))
+    try:
+        with fileinput.FileInput(path, inplace=True) as f:
+            fixMakefileImp(f, base_dir)
+    except AttributeError as e:
+        f = fileinput.FileInput(path, inplace=True)
+        try: fixMakefileImp(f, base_dir)
+        finally: f.close()
 
 def buildCombine(base_dir):
     cwd = os.getcwd()
