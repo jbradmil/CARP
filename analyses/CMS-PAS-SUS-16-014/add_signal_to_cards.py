@@ -3,6 +3,7 @@
 
 import os
 import sys
+import errno
 from ROOT import TFile, TH1
 from optparse import OptionParser
 
@@ -18,16 +19,19 @@ def replace_signal(infile, nsig):
             fout.write(line)
 
 parser = OptionParser()
-parser.add_option("-d", "--indir", dest="indir", default="", help="directory containing datacards to edit")
+parser.add_option("-d", "--indir", dest="indir", default="SR", help="directory containing datacards to edit")
 parser.add_option("-f", "--infile", dest="infile", default="", help="input root file with signal histogram")
 parser.add_option("-s", "--hist", dest="hist", default="", help="input signal histogram stored in infile")
-parser.add_option("-o", "--outdir", dest="outdir", default="", help="directory for storing new S+B SR datacards")
+parser.add_option("-o", "--outdir", dest="outdir", default="test", help="directory for storing new S+B SR datacards")
 (options, args) = parser.parse_args()
 
  # make output directory, if it doesn't exist
 print "Saving new cards to %s" % options.outdir
-if not os.path.exists(options.outdir):
+try:
     os.makedirs(options.outdir)
+except OSError as exception:
+    if exception.errno != errno.EEXIST:
+        raise
 
 # open signal file
 fsig = TFile.Open(options.infile,"read")
