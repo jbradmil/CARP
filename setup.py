@@ -54,6 +54,8 @@ def fixMakefileImp(f, base_dir):
         out = out.replace("-fipa-pta", "")
         out = out.replace("LIBS = $(ROOTLIBS)","LIBS = -L$(VDT)/lib $(ROOTLIBS)")
         out = out.replace("CCFLAGS = -D STANDALONE $(ROOTCFLAGS)","CCFLAGS = -D STANDALONE -I$(VDT)/include $(ROOTCFLAGS)")
+        if "CCFLAGS += -O2" in out and not "-Wno-error" in out:
+            out = out.replace("\n"," -Wno-error=format-security -Wno-error=potentially-evaluated-expression -Wno-error=unused-variable\n")
         last_line_defined_ccflags = this_line_defines_ccflags
         this_line_defines_ccflags = "CCFLAGS = " in line
         this_line_comment_ccflags = "# CMSSW CXXFLAGS" in line
@@ -78,7 +80,7 @@ def buildCombine(base_dir):
     boost_dir = findBoost(base_dir)
     vdt_dir = os.path.join(base_dir, "vdt")
     fixMakefile(base_dir)
-    subprocess.check_call(["make","-k","-j",str(multiprocessing.cpu_count()),"BOOST="+boost_dir,"VDT="+vdt_dir])
+    subprocess.check_call(["make","-k","-j","1" if True else str(multiprocessing.cpu_count()),"BOOST="+boost_dir,"VDT="+vdt_dir])
     os.chdir(cwd)
             
 def setup(base_dir):
