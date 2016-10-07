@@ -13,11 +13,13 @@ def fullPath(path):
 
 def getCombine(base_dir):
     combine_dir = os.path.join(base_dir, "HiggsAnalysis/CombinedLimit")
+    cur_dir = os.getcwd()
     if not os.path.isdir(combine_dir):
-        subprocess.check_call(["git","clone","git@github.com:cms-analysis/HiggsAnalysis-CombinedLimit",combine_dir])
-
-def getBoost(base_dir):
-    pass
+        subprocess.check_call(["git","clone","git@github.com:ald77/HiggsAnalysis-CombinedLimit",combine_dir,"-b","CARP"])
+    else:
+        os.chdir(combine_dir)
+        try: subprocess.check_call(["git","pull"])
+        finally: os.chdir(cur_dir)
 
 def getVDT(base_dir):
     vdt_dir = os.path.join(base_dir, "vdt")
@@ -41,51 +43,54 @@ def buildVDT(base_dir):
     finally:
         os.chdir(cwd)
 
+def checkForBoost(path):
+    path = fullPath(path)
+    for root,dirs,files in os.walk(path):
+        if "program_options.hpp" in files:
+            return os.path.dirname(os.path.dirname(root))
+
 def findBoost(base_dir):
-    return "/usr/local/Cellar/boost/1.61.0_1"
+    # macOS
+    loc = checkForBoost("/usr/local/Cellar/boost")
+    if loc: return loc
 
-def fixMakefileImp(f, base_dir):
-    last_line_defined_ccflags = False
-    this_line_defines_ccflags = False
-    this_line_comment_ccflags = False
-    for line in f:
-        out = line
-        out = out.replace("@ln -sd", "@ln -s")
-        out = out.replace("-fipa-pta", "")
-        out = out.replace("LIBS = $(ROOTLIBS)","LIBS = -L$(VDT)/lib $(ROOTLIBS)")
-        out = out.replace("CCFLAGS = -D STANDALONE $(ROOTCFLAGS)","CCFLAGS = -D STANDALONE -I$(VDT)/include $(ROOTCFLAGS)")
-        if "CCFLAGS += -O2" in out and not "-Wno-error" in out:
-            out = out.replace("\n"," -Wno-error=format-security -Wno-error=potentially-evaluated-expression -Wno-error=unused-variable\n")
-        last_line_defined_ccflags = this_line_defines_ccflags
-        this_line_defines_ccflags = "CCFLAGS = " in line
-        this_line_comment_ccflags = "# CMSSW CXXFLAGS" in line
-        if last_line_defined_ccflags and this_line_comment_ccflags:
-            print("CCFLAGS += -Wno-unused-command-line-argument -Wno-unknown-warning-option -I"+base_dir)
-        print(out, end="")
+    # CMS
+    scram_arch = None
+    try: scram_arch = os.environ["SCRAM_ARCH"]
+    except KeyError: pass
+    if scram_arch: loc = checkForBoost(os.path.join("/afs/cern.ch/cms/",scram_arch,"external"))
+    if loc: return loc
+    
+    # Unix
+    loc = checkForBoost("/usr/include")
+    if loc: return loc
+    loc = checkForBoost("/usr/local/include")
+    if loc: return loc
+    loc = checkForBoost("/opt/include")
+    if loc: return loc
+    loc = checkForBoost("/opt/local/include")
+    if loc: return loc
 
-def fixMakefile(base_dir):
-    path = os.path.join(base_dir, "HiggsAnalysis/CombinedLimit/Makefile")
-    try:
-        with fileinput.FileInput(path, inplace=True) as f:
-            fixMakefileImp(f, base_dir)
-    except AttributeError as e:
-        f = fileinput.FileInput(path, inplace=True)
-        try: fixMakefileImp(f, base_dir)
-        finally: f.close()
+    # Give up
+    raise Exception("Could not find boost")
 
 def buildCombine(base_dir):
     cwd = os.getcwd()
     combine_dir = os.path.join(base_dir, "HiggsAnalysis/CombinedLimit")
     os.chdir(combine_dir)
-    boost_dir = findBoost(base_dir)
-    vdt_dir = os.path.join(base_dir, "vdt")
-    fixMakefile(base_dir)
-    subprocess.check_call(["make","-k","-j","1" if True else str(multiprocessing.cpu_count()),"BOOST="+boost_dir,"VDT="+vdt_dir])
-    os.chdir(cwd)
+    try:
+        boost_dir = findBoost(base_dir)
+        vdt_dir = os.path.join(base_dir, "vdt")
+        subprocess.check_call(["make","-k","-j",str(multiprocessing.cpu_count()),
+                               "BOOST="+boost_dir,"VDT="+vdt_dir,
+                               "EXTERNAL_OPTS_BEGIN=-I$(VDT)/include",
+                               "EXTERNAL_OPTS_END=-Wno-error -w -I"+base_dir,
+                               "EXTERNAL_LIBS_BEGIN=-L$(VDT)"])
+    finally:
+        os.chdir(cwd)
             
 def setup(base_dir):
     getCombine(base_dir)
-    getBoost(base_dir)
     getVDT(base_dir)
 
     buildVDT(base_dir)
