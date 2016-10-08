@@ -12,13 +12,13 @@ def fullPath(path):
     return os.path.realpath(os.path.abspath(os.path.expanduser(path)))
 
 def getCombine(base_dir):
-    combine_dir = os.path.join(base_dir, "HiggsAnalysis/CombinedLimit")
+    combine_dir = os.path.join(base_dir,"HiggsAnalysis","CombinedLimit")
     cur_dir = os.getcwd()
     if not os.path.isdir(combine_dir):
         subprocess.check_call(["git","clone","git@github.com:ald77/HiggsAnalysis-CombinedLimit",combine_dir,"-b","CARP"])
     else:
         os.chdir(combine_dir)
-        try: subprocess.check_call(["git","pull"])
+        try: subprocess.call(["git","pull"])
         finally: os.chdir(cur_dir)
 
 def getVDT(base_dir):
@@ -76,7 +76,7 @@ def findBoost(base_dir):
 
 def buildCombine(base_dir):
     cwd = os.getcwd()
-    combine_dir = os.path.join(base_dir, "HiggsAnalysis/CombinedLimit")
+    combine_dir = os.path.join(base_dir,"HiggsAnalysis","CombinedLimit")
     os.chdir(combine_dir)
     try:
         boost_dir = findBoost(base_dir)
@@ -85,7 +85,8 @@ def buildCombine(base_dir):
                                "BOOST="+boost_dir,"VDT="+vdt_dir,
                                "EXTERNAL_OPTS_BEGIN=-I$(VDT)/include",
                                "EXTERNAL_OPTS_END=-Wno-error -w -I"+base_dir,
-                               "EXTERNAL_LIBS_BEGIN=-L$(VDT)"])
+                               "EXTERNAL_LIBS_BEGIN=-L$(VDT)",
+                               "EXTERNAL_LIBS_END=-l MathMore"])
     finally:
         os.chdir(cwd)
             
