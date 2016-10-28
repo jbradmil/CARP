@@ -21,7 +21,7 @@ Now we turn to "analyzing" the data in that aggegate bin. To gain some intuition
 Run the tool on an interesting signal model by running this command from [demo](../):
 
 ```
-python scripts/mini_analysis.py demo T1bbbb 1800 400 $USER
+python scripts/mini_analysis.py demo T1qqqq 1500 700 $USER
 ```
 
 ### What can this tool be used for?
