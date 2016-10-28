@@ -135,7 +135,7 @@ def MakePDFPlot(plot_title, Nobs, Npred, err_pred_up, err_pred_down, pvalue, poi
     else:
         exp_line_height = n[0]
     partial_bin_height=n[cutoffbinindex]
-    plt.plot([Npred, Npred], [0, exp_line_height], linestyle='--', color='black')
+    plt.plot([Npred, Npred], [0, exp_line_height], linestyle='--', color=hcolor)
     if Nobs>Npred:
         if len(pois_vhigh_arr)>0: 
             plt.hist(pois_vhigh_arr, fill=True, facecolor=hcolor, bins=bins, histtype='step', edgecolor=hcolor, linewidth=2)
@@ -145,25 +145,32 @@ def MakePDFPlot(plot_title, Nobs, Npred, err_pred_up, err_pred_down, pvalue, poi
         sig_n, sig_bins, sig_patches = SB
         temp = [i for i,b in enumerate(sig_bins) if Nobs > b]
         if len(temp) > 0:
-            exp_line_height = sig_n[max(temp)]
+            exp_line_height_sig = sig_n[max(temp)]
         else:
-            exp_line_height = sig_n[0]
-        plt.plot([Nobs, Nobs], [0, exp_line_height], linestyle='--', color='red')
+            exp_line_height_sig = sig_n[0]
+        plt.plot([Nobs, Nobs], [0, exp_line_height_sig], linestyle='--', color='red')
     plt.xlabel(r'$N$', fontsize=15)
     plt.ylabel(r'$\mathrm{Toys}$', fontsize=15)
     if obs:
-        plt.text(0.65, 0.9, r'$N_{\rm obs} = %d$' % (Nobs), fontsize=15, transform=plt.gca().transAxes)
-        plt.text(0.65, 0.83, r'$N_{\rm exp} = %3.2f^{+%3.2f}_{-%3.2f}$' % (Npred, err_pred_up, err_pred_down), fontsize=15, transform=plt.gca().transAxes)
+#        plt.text(0.65, 0.9, r'$N_{\rm obs} = %d$' % (Nobs), fontsize=15, transform=plt.gca().transAxes)
+        plt.text(bins2[cutoffbinindex]+binwidth, 1.05*partial_bin_height, r'$N_{\rm obs} = %d$' % (Nobs), fontsize=15)
+#        plt.text(0.65, 0.83, r'$N_{\rm exp} = %3.2f^{+%3.2f}_{-%3.2f}$' % (Npred, err_pred_up, err_pred_down), fontsize=15, transform=plt.gca().transAxes)
+        plt.text(0.8*Npred, 1.05*exp_line_height, r'$\mu_{B} = %3.2f^{+%3.2f}_{-%3.2f}$' % (Npred, err_pred_up, err_pred_down), fontsize=15, color ='#0033CC')
+        plt.ylim(0, 1.15*exp_line_height)
         if Nobs>=Npred:
-            plt.text(0.5, 0.75, r'$P_{\rm obs}(N\geq N_{\rm obs}|\mu=B)=%f$' % (pvalue), fontsize=15, transform=plt.gca().transAxes)
+            plt.text(0.6, 0.95, r'$P_{\rm obs}(N\geq N_{\rm obs}|\mu=B)=%f$' % (pvalue), fontsize=13, transform=plt.gca().transAxes)
         else:
-            plt.text(0.5, 0.75, r'$P_{\rm obs}(N\leq N_{\rm obs}|\mu=B)=%f$' % (1-pvalue), fontsize=15, transform=plt.gca().transAxes)        
-        plt.text(0.84, 0.68, r'$(%3.2f\sigma)$' % (signif), fontsize=15, transform=plt.gca().transAxes) 
+            plt.text(0.6, 0.95, r'$P_{\rm obs}(N\leq N_{\rm obs}|\mu=B)=%f$' % (1-pvalue), fontsize=13, transform=plt.gca().transAxes)        
+        plt.text(0.84, 0.88, r'$(%3.2f\sigma)$' % (signif), fontsize=15, transform=plt.gca().transAxes)
+        legend = plt.legend(numpoints=1, frameon=False, bbox_to_anchor=(0.25, 1.02, 1., .102), loc=3, ncol=2, borderaxespad=0.)
     else:
-        plt.text(0.65, 0.9, r'$N_{S+B} = %3.2f$' % (Nobs), fontsize=15, transform=plt.gca().transAxes)
-        plt.text(0.65, 0.83, r'$N_{B} = %3.2f^{+%3.2f}_{-%3.2f}$' % (Npred, err_pred_up, err_pred_down), fontsize=15, transform=plt.gca().transAxes)
-        plt.text(0.55, 0.75, r'$P_{\rm exp}(N\geq N_{S+B}|\mu=B)=%f$' % (pvalue), fontsize=13, transform=plt.gca().transAxes)
-        plt.text(0.84, 0.68, r'$(%3.2f\sigma)$' % (signif), fontsize=15, transform=plt.gca().transAxes)
+#        plt.text(0.65, 0.9, r'$N_{S+B} = %3.2f$' % (Nobs), fontsize=15, transform=plt.gca().transAxes)
+        plt.text(0.9*Nobs, 1.05*exp_line_height_sig, r'$\mu_{S+B} = %3.2f$' % (Nobs), fontsize=15, color ='#CC0033')
+#        plt.text(0.65, 0.83, r'$N_{B} = %3.2f^{+%3.2f}_{-%3.2f}$' % (Npred, err_pred_up, err_pred_down), fontsize=15, transform=plt.gca().transAxes)
+        plt.ylim(0, 1.15*max(exp_line_height,exp_line_height_sig))
+        plt.text(0.9*Npred, 1.05*exp_line_height, r'$\mu_{B} = %3.2f^{+%3.2f}_{-%3.2f}$' % (Npred, err_pred_up, err_pred_down), fontsize=15, color ='#006600')
+        plt.text(0.57, 0.95, r'$P_{\rm exp}(N\geq N_{S+B}|\mu=B)=%f$' % (pvalue), fontsize=13, transform=plt.gca().transAxes)
+        plt.text(0.84, 0.88, r'$(%3.2f\sigma)$' % (signif), fontsize=15, transform=plt.gca().transAxes)
         legend = plt.legend(numpoints=1, frameon=False, bbox_to_anchor=(0.25, 1.02, 1., .102), loc=3,\
                             ncol=2, borderaxespad=0.)
      

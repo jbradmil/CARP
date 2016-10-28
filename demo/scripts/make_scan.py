@@ -27,6 +27,16 @@ def make_scan(datadir):
     ## print expSigs
     ## print obsSigs
 
+    xmin = 600
+    xmax = 2000
+    ymin = 0
+    ymax = 2000
+    if datadir.find('t1bbbb') >= 0:
+        xmax = 2100
+        ymax = 2000
+    elif datadir.find('t1tttt') >= 0:
+        ymax = 1800
+
     xlabel = '$m_{\\tilde{g}}\;[\\mathrm{GeV}]$'
     if datadir.find('t2tt') >= 0:
         xlabel = '$m_{\\tilde{t}}\;[\\mathrm{GeV}]$'
@@ -36,8 +46,10 @@ def make_scan(datadir):
         xlabel = '$m_{\\tilde{q}}\;[\\mathrm{GeV}]$' 
 
     # define grid.
-    xi = np.linspace(min(mMoms), max(mMoms), 100)
-    yi = np.linspace(min(mLSPs), max(mLSPs), 100)
+    #xi = np.linspace(min(mMoms), max(mMoms), 100)
+    #yi = np.linspace(min(mLSPs), max(mLSPs), 100)
+    xi = np.linspace(xmin, xmax, 100)
+    yi = np.linspace(ymin, ymax, 100)
 
     XI, YI = np.meshgrid(xi, yi)
     # grid the data.
@@ -50,24 +62,24 @@ def make_scan(datadir):
         kin_lims = xi-350
     elif datadir.find('t2tt') >= 0:
         kin_lims = xi-175
-    plt.fill_between(xi,kin_lims,max(mLSPs),color='white')
+    plt.fill_between(xi,kin_lims,ymax,color='white')
     plt.colorbar(label='Expected significance') # draw colorbar
-    plt.xlim(min(mMoms),max(mMoms))
+    plt.xlim(xmin, xmax)
     plt.xlabel(r'%s' % xlabel, fontsize=15)      
     plt.ylabel(r'$m_{\tilde{\chi}^0_1}\;[\mathrm{GeV}]$', fontsize=15)
-    plt.ylim(min(mLSPs),max(mLSPs))
+    plt.ylim(ymin,ymax)
     plt.savefig(datadir+'/exp_vs_B_sig.pdf')
     plt.clf()
 
     rbf = Rbf(mMoms, mLSPs, obsSigs, epsilon=2)
     ZI = rbf(XI, YI)
     CS = plt.pcolor(XI, YI, ZI, cmap=plt.cm.seismic, vmin=-3, vmax=3)
-    plt.fill_between(xi,kin_lims,max(mLSPs),color='white')
+    plt.fill_between(xi,kin_lims,ymax,color='white')
     plt.colorbar(label='Observed significance') # draw colorbar
-    plt.xlim(min(mMoms),max(mMoms))
+    plt.xlim(xmin, xmax)
     plt.xlabel(r'%s' % xlabel, fontsize=15)      
     plt.ylabel(r'$m_{\tilde{\chi}^0_1}\;[\mathrm{GeV}]$', fontsize=15)
-    plt.ylim(min(mLSPs),max(mLSPs))
+    plt.ylim(ymin, ymax)
     plt.savefig(datadir+'/obs_vs_B_sig.pdf')
     plt.clf()
 

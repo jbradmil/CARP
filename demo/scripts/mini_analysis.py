@@ -9,128 +9,29 @@ from math import sqrt
 from utils import ensure_dir
 from bg_est import BGEst
 from figures_of_merit import *
-from timeit import default_timer as timer
 from bin_navigation import *
-from plotter_1d import *
+from download_data import *
+from optimize_search import *
+from do_the_physics import *
 import json
 
 
 lumi = 12902.808    
     
-def make_best_aggregate_bin(signal, sumBG): 
-    ## Step 2: optimize bin selection to design the most sensitive simple analysis
-    totalS = sum(signal)
-    totalB = sum(sumBG.CV)
-    print("Total expected S / B = %f / %f = %f" % (totalS, totalB, totalS/totalB))
-    print("Optimizing bin selection for maximum expected significance...")
-    Qs = {}
-    start = timer()
-    for ibin in range(len(signal)):
-        Q = GetQ(signal[ibin], sumBG.CV[ibin])
-        if Q < 0.01:
-            # negligible sensitivity, no chance of seeing signal, skip it and save time
-            continue
-        Qs[ibin] = Q
-    best_bins = []
-    # get indices of bins, ranked from best to worst
-    for ibin in sorted(Qs, key=Qs.get, reverse=True): 
-        best_bins.append(ibin)
-    max_signif = 0.
-    Nsig = 0.
-    Nbg = 0.
-    err_bg_up = 0.
-    err_bg_down = 0.
-    asr_bins = []
-    ninsp = 0
-    for ibin in best_bins:
-        ninsp += 1 ## count how many we looked at
-        Nsig_new = Nsig + signal[ibin]
-        Nbg_new = Nbg+sumBG.CV[ibin]
-        ##     approximate that uncertainties are uncorrelated from bin-to-bin -- true if stats dominate
-        err_bg_up_new = sqrt(err_bg_up**2+sumBG.statUp[ibin]**2+sumBG.systUp[ibin]**2)
-        err_bg_down_new = sqrt(err_bg_down**2+sumBG.statDown[ibin]**2+sumBG.systDown[ibin]**2)
-        signif = PValueToSignificance(GetPValue(Nsig_new+Nbg_new, Nbg_new, err_bg_up_new, err_bg_down_new))
-        if Qs[ibin] < Qs[best_bins[0]]/50. or (max_signif-signif) > 0.5:
-            # if we're getting here, these bins probably don't matter anymore
-            break
-        if signif > max_signif:
-            Nsig = Nsig_new
-            Nbg = Nbg_new
-            err_bg_up = err_bg_up_new
-            err_bg_down = err_bg_down_new
-            max_signif = signif
-            asr_bins.append(ibin)
-        if max_signif > 5.:
-            print "Found a 5+ sigma bin combination, stopping here"
-            break ## if we have 5-sigma discovery senstivity, that's good enough
-
-    ## now we have the optimal set of bins -- let's run this analysis and make some interesting plots
-    print("Optimization performed on "+ str(ninsp) + " bins in " + str(timer()-start) + " seconds.")
-    print("These are the bins to combine:")
-    print(asr_bins)
-
-    return asr_bins, max_signif
         
 
 def mini_analysis(outdir, model, mMom, mLSP, username):
-    ## Step 1: read the data in from SQL database   
+    ## setup output directory
     outdir_full = "output/%s/%s_%d_%d" % (outdir, model, mMom, mLSP)
     ensure_dir("output/"+outdir) # create output directory if needed
     ensure_dir(outdir_full) # create output directory if needed
-
-    ## now connect to the SQL database
-    con = mdb.connect(host='localhost', user=username, db='ra2')
-    with con:
-        cur = con.cursor()
-        ## get the observed data
-        data_obs = []
-        cur.execute("SELECT * FROM data_obs")
-        for i in range(cur.rowcount):
-            row = cur.fetchone()
-            data_obs.append(int(row[1]))
-        ## get znn background estimation
-        znn = BGEst()
-        cur.execute("SELECT * FROM znn")
-        for i in range(cur.rowcount):
-            row = cur.fetchone()
-            znn.AddBin(float(row[1]), float(row[2]), float(row[3]), float(row[4]), float(row[5]))
-        ## get qcd background estimation
-        qcd = BGEst()
-        cur.execute("SELECT * FROM qcd")
-        for i in range(cur.rowcount):
-            row = cur.fetchone()
-            qcd.AddBin(float(row[1]), float(row[2]), float(row[3]), float(row[4]), float(row[5]))
-        ## get lost lepton and hadronic tau background estimations -- combine them into one (wtop)
-        lostlep = BGEst()
-        cur.execute("SELECT * FROM lostlep")
-        for i in range(cur.rowcount):
-            row = cur.fetchone()
-            lostlep.AddBin(float(row[1]), float(row[2]), float(row[3]), float(row[4]), float(row[5]))
-        hadtau = BGEst()
-        cur.execute("SELECT * FROM hadtau")
-        for i in range(cur.rowcount):
-            row = cur.fetchone()
-            hadtau.AddBin(float(row[1]), float(row[2]), float(row[3]), float(row[4]), float(row[5]))
-        # combine into one wtop BG, correlating stat err but not syst err
-        wtop = BGEst([a+b for a,b in zip(lostlep.CV,hadtau.CV)],\
-                     [a+b for a,b in zip(lostlep.statUp,hadtau.statUp)],\
-                     [a+b for a,b in zip(lostlep.statDown,hadtau.statDown)],\
-                     [sqrt(a**2+b**2) for a,b in zip(lostlep.systUp,hadtau.systUp)],\
-                     [sqrt(a**2+b**2) for a,b in zip(lostlep.systDown,hadtau.systDown)])
-        # finally, get the expected signal yields
-        # identify the table and column
-        signal_table = model
-        signal_column = "_".join([signal_table, str(mMom), str(mLSP)])
-        signal = []
-        cur.execute("SELECT %s FROM %s" % (signal_column, signal_table))
-        for i in range(cur.rowcount):
-            row = cur.fetchone()
-            signal.append(float(row[0]))
-
+    
+    ## Step 1: read the data in from SQL database   
+    data_obs, wtop, znn, qcd, signal = download_data(model, mMom, mLSP, username)
     sumBG = wtop + znn + qcd
 
     ## Step 2: optimize bin selection to design the most sensitive simple analysis
-    bins_to_combine, max_signif = make_best_aggregate_bin(signal, sumBG)
+    bins_to_combine, max_signif = optimize_search(signal, sumBG)
     ## get the yields again
     Nobs = SumOverBins(data_obs, bins_to_combine)
     Nsig = SumOverBins(signal, bins_to_combine)
@@ -146,24 +47,14 @@ def mini_analysis(outdir, model, mMom, mLSP, username):
     p_obs = GetPValue(Nobs, Nbg, err_bg_up, err_bg_down, outdir_full+'/pvalue_obs.pdf', True)
     print("Obs., Pred., Obs. Sig. = %3.2f, %3.2f + %3.2f - %3.2f, %3.2f (p = %f)" % (Nobs, Nbg, err_bg_up, err_bg_down, PValueToSignificance(p_obs), p_obs))
 
-    ## now prepare 1D physics distributions from best bins
-    min_njets, max_njets = GetMinMaxNJets(bins_to_combine)
-    min_nbjets, max_nbjets = GetMinMaxBTags(bins_to_combine)
-    min_htmht, max_htmht = GetMinMaxHTMHT(bins_to_combine)
-    min_mht, max_mht = GetMinMaxMHT(bins_to_combine)
-    min_ht, max_ht = GetMinMaxHT(bins_to_combine)
-
-    print "Writing output to " + outdir_full
-    make_njets_projection(outdir_full+"/njets_projection.pdf", data_obs, wtop, znn, qcd, signal, min_nbjets, max_nbjets, min_htmht, max_htmht, min_ht, max_ht)
-    make_nbjets_projection(outdir_full+"/nbjets_projection.pdf", data_obs, wtop, znn, qcd, signal, min_njets, max_njets, min_htmht, max_htmht, min_ht, max_ht)
-    make_mht_projection(outdir_full+"/mht_projection.pdf", data_obs, wtop, znn, qcd, signal, min_njets, max_njets, min_nbjets, max_nbjets, min_htmht, max_htmht, min_ht, max_ht)
-
+    do_the_physics(data_obs, wtop, znn, qcd, signal, bins_to_combine, outdir_full)
     # save the important outputs to a JSON file
     with open(outdir_full+'/summary.json', 'w') as f:
         json.dump({'mMom': mMom, 'mLSP': mLSP,\
                    'expected significance': max_signif, 'observed significance': PValueToSignificance(p_obs)}, f)
+    
 
-    ## now copy the LaTeX summary template to the output directory
+    ## prepare the LaTeX summary from templates
     with open(outdir_full+'/summary.tex', 'w') as fout:
         ## copy preamble already saved in output directory
         with open('output/preamble_template.tex', 'r') as fpre:
@@ -188,7 +79,7 @@ def mini_analysis(outdir, model, mMom, mLSP, username):
         fout.write(latex_1d)
         fout.write('\\end{document}\n')
     ## it should compile if all the plots have been made successfully
-                          
+    
     ## return exp sig, obs sig so we can store them
     return max_signif, PValueToSignificance(p_obs)
 ## end of mini_analysis
