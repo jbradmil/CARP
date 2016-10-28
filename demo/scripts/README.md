@@ -23,3 +23,8 @@ Run the tool on an interesting signal model by running this command from [demo](
 ```
 python scripts/mini_analysis.py demo T1bbbb 1800 400 $USER
 ```
+
+### What can this tool be used for?
+One could run on a set of model points and examine the observed significance in each simplified analysis. The model points corresponding to analyses with significant excesses (red, below) could be worth studying further...
+
+![alt_tag](../extras/obs_vs_B_sig.png)
