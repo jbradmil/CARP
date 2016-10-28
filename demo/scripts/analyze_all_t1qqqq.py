@@ -13,9 +13,11 @@ def analyze_all_t1qqqq(outdir, username):
     nModels = 0
     for imodel in t1qqqq_models:
         nModels += 1
-        if nModels % 6 == 0:
-            mMom = int(imodel.split("_")[1])
-            mLSP = int(imodel.split("_")[2])
+        mMom = int(imodel.split("_")[1])
+        mLSP = int(imodel.split("_")[2])
+        if mMom < 1600 and mLSP < 600:
+            if nModels % 10 > 0: continue
+        elif nModels % 6 == 0:                
             exp_sig, obs_sig = mini_analysis(outdir, 'T1qqqq', mMom, mLSP, username)
             mMoms.append(mMom)
             mLSPs.append(mLSP)
